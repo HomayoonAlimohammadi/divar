@@ -1,12 +1,11 @@
 from django.shortcuts import get_object_or_404, render, redirect 
 from core.models import Item 
-from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
 
-
-User = get_user_model()
 
 def index_view(request, message=None):
-    item_list = list(Item.objects.all())
+    item_list = Item.objects.all()
     context = {
         'item_list': item_list,
         'message': message
@@ -18,14 +17,17 @@ def user_register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        password_conf = request.POST.get('password_conf')
+        if password != password_conf:
+            return render(request, 'user_register.html')
         try:
-            user = User.objects.create(username=username, password=password)
+            user = User.objects.create_user(username=username, password=password)
             login(request, user)
-        except: # this should be corrected 
-            message = 'Something went wrong!'
+        except:
+            print('something went wrong')
         return redirect('core:index')
     if request.user.is_authenticated:
-        return redirect('core:user_logout')
+        return redirect('core:user_details', request.user.pk)
     return render(request, 'user_register.html')
 
 def user_list_view(request):
@@ -46,16 +48,17 @@ def user_login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         print(username, password)
-        try:
-            user = User.objects.get(username=username, password=password)
-        except:
-            return redirect('core:index')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+        else:
+            return redirect('core:user_login')
         # user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect('core:index')
     if request.user.is_authenticated:
-        return redirect('core:user_logout')
+        return redirect('core:user_details', request.user.pk)
     return render(request, 'user_login.html')
 
 def user_logout_view(request):
@@ -113,8 +116,16 @@ def item_delete_view(request, item_id: int):
     context = {'item': item}
     return render(request, 'item_delete.html', context=context)
 
+def item_buy_view(request, item_id: int):
+    item = get_object_or_404(Item, pk=item_id)
+    if request.method == 'POST':
+        res = api_pay(item.price)
+        if res:
+            item.delete()
+            return redirect('core:index')
+    return render(request, 'item_buy.html', {'item': item})
+
 def user_item_list_view(request):
-    print(request.user)
     item_list = Item.objects.all().filter(user=request.user)
     context = {
         'item_list': item_list,
@@ -122,3 +133,5 @@ def user_item_list_view(request):
     return render(request, 'index.html', context=context)
 
     
+def api_pay(item_price):
+    return True

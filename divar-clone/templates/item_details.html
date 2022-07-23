@@ -6,6 +6,8 @@
     <p><b>Price:</b> {{item.price}}</p>
     {% if request.user == item.user %}
         <a href={% url 'core:item_delete' item.pk %}><button type='button'>Delete Item</button></a>
+    {% else %}
+        <a href={% url 'core:item_buy' item.pk %}><button type='button'>Buy Item</button></a>
     {% endif %}
 </div>
 <br/>
