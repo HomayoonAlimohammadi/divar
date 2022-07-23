@@ -1,0 +1,12 @@
+<head>
+    <title>User Logout</title>
+</head>
+<body>
+    <h1>User Logout</h1>
+    <h3>Are you sure you want to logout?</h3>
+    <form action={% url 'core:user_logout' %} method="post">
+        {% csrf_token %}
+        <button type="submit">Yes</button>
+        <a href={% url 'core:index' %}><button type="button">No, Take me back!</button></a>
+    </form>
+</body>

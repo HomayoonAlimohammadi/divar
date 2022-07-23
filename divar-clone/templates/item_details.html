@@ -1,0 +1,12 @@
+<h2>Item Details</h2>
+<div>
+    <p><b>Name:</b> {{item.name}}</p>
+    <p><b>Description:</b> {{item.description}}</p>
+    <p><b>User:</b> {{item.user}}</p>
+    <p><b>Price:</b> {{item.price}}</p>
+    {% if request.user == item.user %}
+        <a href={% url 'core:item_delete' item.pk %}><button type='button'>Delete Item</button></a>
+    {% endif %}
+</div>
+<br/>
+<a href={% url 'core:index' %}>Homepage</a>

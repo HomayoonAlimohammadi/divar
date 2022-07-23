@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<head>
+    <title>User Registeration</title>
+</head>
+<body>
+    <h1>User Registeration Form</h1>
+    <form action={% url 'core:user_register' %} method="post">
+        {% csrf_token %}
+        Username: <input name="username" type="text" /><br/>
+        Password: <input name="password" type="password" /><br/>
+        <button type="submit">Submit</button><br/>
+    </form>
+
+    <a href={% url 'core:index' %}>Homepage</a>
+</body>

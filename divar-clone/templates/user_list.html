@@ -1,0 +1,14 @@
+<head>
+    <title>User List</title>
+</head>
+<body>
+    <h1>User List</h1>
+    {% for user in user_list %} 
+        <p>{{user.pk}} - {{user.username}}</p>
+    {% empty %} 
+       <p>No users yet!</p>
+    {% endfor %}
+
+    <a href={% url 'core:index' %}>Homepage</a>
+
+</body>

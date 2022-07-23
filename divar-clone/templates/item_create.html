@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+    <title>Item Creation</title>
+</head>
+<body>
+    <h1>Item Creation Form</h1>
+    <form action={% url 'core:item_create' %} method="post">
+        {% csrf_token %}
+        Name: <input name="name" type="text" /><br/>
+        Description: <input name="description" type="text" /><br/>
+        Price: <input name="price" type="number"><br/>
+        <button type="submit">Create</button><br/>
+    </form>
+
+    <a href={% url 'core:index' %}>Homepage</a>
+</body>

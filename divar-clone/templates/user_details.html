@@ -1,0 +1,14 @@
+<head>
+    <title>Profile</title>
+</head>
+
+<h2>User Profile</h2>
+<div>
+    <p><b>Username:</b> {{request.user.username}}</p>
+    <p><b>Email Address:</b> {{request.user.email}}</p>
+    <p><b>Name:</b> {{request.user.name}}</p>
+
+</div>
+
+<a href={% url 'core:user_item_list' %}>My Items (not implemented yet)</a><br/>
+<a href={% url 'core:index' %}>Homepage</a>

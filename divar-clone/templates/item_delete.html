@@ -1,0 +1,12 @@
+<head>
+    <title>Iteme Delete</title>
+</head>
+<body>
+    <h1>Delete Item?</h1>
+    <h3>Are you sure you want to delete this item?</h3>
+    <form action={% url 'core:item_delete' item.pk %} method="post">
+        {% csrf_token %}
+        <button type="submit">Yes</button>
+        <a href={% url 'core:item_details' item.pk %}><button type="button">No, Take me back!</button></a>
+    </form>
+</body>
