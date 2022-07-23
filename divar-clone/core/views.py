@@ -65,7 +65,15 @@ def user_logout_view(request):
     return render(request, 'user_logout.html')
 
 def item_list_view(request):
-    return redirect('core:index')
+    item_list = Item.objects.all()
+    if request.method == 'POST':
+        item_list = Item.objects.filter(name__icontains=request.POST.get('q'))
+    
+    context = {
+        'item_list': item_list
+    }
+
+    return render(request, 'index.html', context=context)
 
 def item_create_view(request):
     is_user_auth = request.user.is_authenticated
@@ -112,4 +120,5 @@ def user_item_list_view(request):
         'item_list': item_list,
     }
     return render(request, 'index.html', context=context)
+
     
