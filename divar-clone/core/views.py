@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from core.models import Item 
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
+import api.views as api
 
 
 def index_view(request, message=None):
@@ -21,7 +22,7 @@ def user_register_view(request):
         if password != password_conf:
             return render(request, 'user_register.html')
         try:
-            user = User.objects.create_user(username=username, password=password)
+            user = User.objects.create_user(username=username, password=password) # type: ignore
             login(request, user)
         except:
             print('something went wrong')
@@ -53,7 +54,6 @@ def user_login_view(request):
             login(request, user)
         else:
             return redirect('core:user_login')
-        # user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             return redirect('core:index')
@@ -119,8 +119,8 @@ def item_delete_view(request, item_id: int):
 def item_buy_view(request, item_id: int):
     item = get_object_or_404(Item, pk=item_id)
     if request.method == 'POST':
-        res = api_pay(item.price)
-        if res:
+        res = api.pay_for_item(item.price)
+        if res.status_code == 200:
             item.delete()
             return redirect('core:index')
     return render(request, 'item_buy.html', {'item': item})
@@ -133,5 +133,3 @@ def user_item_list_view(request):
     return render(request, 'index.html', context=context)
 
     
-def api_pay(item_price):
-    return True
