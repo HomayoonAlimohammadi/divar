@@ -1,7 +1,12 @@
+{% extends "layout.html" %} 
+
 <head>
+    {% block head %} 
     <title>Iteme Delete</title>
+    {% endblock %}
 </head>
 <body>
+    {% block body %}
     <h1>Delete Item?</h1>
     <h3>Are you sure you want to delete this item?</h3>
     <form action={% url 'core:item_delete' item.pk %} method="post">
@@ -9,4 +14,5 @@
         <button type="submit">Yes</button>
         <a href={% url 'core:item_details' item.pk %}><button type="button">No, Take me back!</button></a>
     </form>
+    {% endblock %}
 </body>

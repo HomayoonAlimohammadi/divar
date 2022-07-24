@@ -1,16 +1,33 @@
+{% extends "layout.html" %} 
+
 <head>
+    {% block head %} 
     <title>Profile</title>
+    {% endblock %} 
 </head>
 
-<h2>User Profile</h2>
-<div>
-    <p><b>Username:</b> {{request.user.username}}</p>
-    <p><b>Email Address:</b> {{request.user.email}}</p>
-    <p><b>Name:</b> {{request.user.name}}</p>
+<body>
+    {% block body %} 
+    <h2>User Profile</h2>
+    <div>
+        <p><b>Username:</b> {{user.username}}</p>
+        <p><b>Email Address:</b> {{user.email}}</p>
+        {% if user.first_name %} 
+            <p><b>First Name:</b> {{user.first_name}}</p>
+        {% endif %} 
+        {% if user.last_name %} 
+            <p><b>Last Name:</b> {{user.last_name}}</p>
+        {% endif %} 
 
-</div>
+        
 
-<a href={% url 'core:user_item_list' %}>My Items</a><br/>
-<a href={% url 'core:index' %}>Homepage</a><br/><br/>
+    </div>
+    <p><a href={% url 'core:user_item_list' user.pk %}><button type="button">User Items</button></a></p>
+    {% if request.user.pk == user.pk %} 
+    <p><a href={% url 'core:user_logout' %}><button type='button'>Logout</button></a></p>
+    <p><a href={% url 'core:user_update' %}><button type='button'>Edit Profile</button></a></p>
+    {% endif %} 
+    <p><a href={% url 'core:index' %}><button type="button">Homepage</button></a><br/><br/></p>
 
-<a href={% url 'core:user_logout' %}><button type='button'>Logout</button></a><br/>
+    {% endblock %}
+</body>

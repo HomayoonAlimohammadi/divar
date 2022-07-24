@@ -1,7 +1,13 @@
+{% extends "layout.html" %} 
+
+
 <head>
+    {% block head %}
     <title>User Logout</title>
+    {% endblock %}
 </head>
 <body>
+    {% block body %}
     <h1>User Logout</h1>
     <h3>Are you sure you want to logout?</h3>
     <form action={% url 'core:user_logout' %} method="post">
@@ -9,4 +15,5 @@
         <button type="submit">Yes</button>
         <a href={% url 'core:index' %}><button type="button">No, Take me back!</button></a>
     </form>
+    {% endblock %}
 </body>

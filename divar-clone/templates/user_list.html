@@ -1,14 +1,20 @@
+{% extends "layout.html" %} 
+
+
 <head>
+    {% block head %}
     <title>User List</title>
+    {% endblock %} 
 </head>
 <body>
+    {% block body %} 
     <h1>User List</h1>
     {% for user in user_list %} 
-        <p>{{user.pk}} - {{user.username}}</p>
+        <p><a href={% url 'core:user_details' user.pk %}>{{user.username}}</a></p>
     {% empty %} 
        <p>No users yet!</p>
     {% endfor %}
 
-    <a href={% url 'core:index' %}>Homepage</a>
-
+    <a href={% url 'core:index' %}><button type="button">Homepage</button></a>
+    {% endblock %} 
 </body>

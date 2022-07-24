@@ -1,14 +1,28 @@
-<h2>Item Details</h2>
-<div>
-    <p><b>Name:</b> {{item.name}}</p>
-    <p><b>Description:</b> {{item.description}}</p>
-    <p><b>User:</b> {{item.user}}</p>
-    <p><b>Price:</b> {{item.price}}</p>
-    {% if request.user == item.user %}
-        <a href={% url 'core:item_delete' item.pk %}><button type='button'>Delete Item</button></a>
-    {% else %}
-        <a href={% url 'core:item_buy' item.pk %}><button type='button'>Buy Item</button></a>
-    {% endif %}
-</div>
-<br/>
-<a href={% url 'core:index' %}>Homepage</a>
+{% extends "layout.html" %} 
+
+<head>
+    {% block head %} 
+    <title>Item Details</title>
+    {% endblock %} 
+</head>
+
+<body>
+    {% block body %} 
+    <div>
+        <h2>Item Details</h2>
+        <p><b>Name:</b> {{item.name}}</p>
+        {% if item.description %} 
+            <p><b>Description:</b> {{item.description}}</p>
+        {% endif %} 
+        <p><b>User:</b> <a href={% url 'core:user_details' item.user.pk %}>{{item.user}}</a></p>
+        <p><b>Price:</b> {{item.price}}</p>
+        {% if request.user == item.user %}
+            <a href={% url 'core:item_delete' item.pk %}><button type='button'>Delete Item</button></a>
+        {% else %}
+            <a href={% url 'core:item_buy' item.pk %}><button type='button'>Buy Item</button></a>
+        {% endif %}
+    </div>
+    <br/>
+    <a href={% url 'core:index' %}>Homepage</a>
+    {% endblock %} 
+</body>

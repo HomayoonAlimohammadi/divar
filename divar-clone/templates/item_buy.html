@@ -1,12 +1,17 @@
+{% extends "layout.html" %} 
+
 <head>
+    {% block head %} 
     <title>Buy Item</title>
+    {% endblock %} 
 </head>
 
 <body>
+    {% block body %} 
     <form action={% url 'core:item_buy' item.pk %} method="post">
         {% csrf_token %}
         <button type='submit'>Pay For Item: {{item.price}}</button><br/>
     </form>
     <a href={% url 'core:item_details' item.pk %}><button type='button'>Go back</button></a>
-
+    {% endblock %} 
 </body>

@@ -1,14 +1,22 @@
+{% extends "layout.html" %} 
+
+
 <head>
+    {% block head %} 
     <title>User Login</title>
+    {% endblock %} 
 </head>
 <body>
+    {% block body %}
     <h1>User Login Form</h1>
     <form action={% url 'core:user_login' %} method="post">
         {% csrf_token %}
-        Username: <input name="username" type="text" /><br/>
-        Password: <input name="password" type="password" /><br/>
+        {% for field in form %} 
+            <p>{{field.label_tag}} {{ field }}</p>
+        {% endfor %}
         <button type="submit">Login</button><br/>
     </form>
 
     <a href={% url 'core:index' %}>Homepage</a>
+    {% endblock %}
 </body>

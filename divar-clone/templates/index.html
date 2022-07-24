@@ -1,29 +1,30 @@
-<!DOCTYPE html>
+{% extends "layout.html" %} 
+
 <head>
+    {% block head %} 
     <title>Index</title>
+    {% endblock %} 
 </head>
 
 <body>
+    {% block body %} 
     <h1>Welcome to Divar clone homepage!</h1>
 
-    <form action={% url 'core:item_list' %} method="post">
+    <form action={% url 'core:index' %} method="post">
         {% csrf_token %}
         Search: <input name="q" type="text" />
         <button type="submit">Search</button>
     </form>
     <br/>
-    {% if request.user.is_authenticated %} 
-        <p style="color:cyan">Hello {{request.user.username}}</p>
-    {% else %} 
-        <p style="color:gray">You are not signed in.</p>
-    {% endif %}
-    {% if message %} 
-        <p style="color:red;">{{message}}</p>
-    {% endif %}
+
     <h2>Items:</h2>
     <div>
         {% for item in item_list %} 
-            <a href={% url 'core:item_details' item.pk %}>{{item.pk}} - {{ item }}</a><br/>
+            <h3 style="color:orangered">{{ item.name }}</h3>
+            <li>{{ item.description }}</li>
+            <p style="color:chartreuse"><b>Price: {{ item.price }}</b></p>
+            <a href={% url 'core:item_details' item.pk %}><button type="button">Go to Item</button></a><br/>
+            <hr>
         {% empty %} 
             <p>No items available yet!</p>
         {% endfor %}
@@ -31,23 +32,22 @@
     </div>
     <br/><br/>
 
-{% if request.user.is_authenticated %}
-    <a href={% url 'core:user_details' user.pk %}>My Profile</a>
-{% else %} 
-    <a href={% url 'core:user_register' %}>Sign Up</a><br/>
-    <a href={% url 'core:user_login' %}>Sign In</a><br/>
-{% endif %} 
+    {% if request.user.is_authenticated %}
+        <a href={% url 'core:user_details' user.pk %}>My Profile</a>
+    {% else %} 
+        <a href={% url 'core:user_register' %}>Sign Up</a><br/>
+        <a href={% url 'core:user_login' %}>Sign In</a><br/>
+    {% endif %} 
 
-<br/>
-<a href={% url 'core:user_list' %}>Users</a><br/>
+    <br/>
+    <a href={% url 'core:user_list' %}>Users</a><br/>
 
-<br/>
+    <br/>
 
-<br/>
-<a href={% url 'core:item_list' %}>Items List</a><br/>
-<a href={% url 'core:item_create' %}>Create Item</a><br/>
+    <br/>
+    <a href={% url 'core:item_create' %}>Create Item</a><br/>
 
-<br/><br/>
-<a href={% url 'core:index' %}><button type='button'>Homepage</button></a><br/>
-
+    <br/><br/>
+    <a href={% url 'core:index' %}><button type='button'>Homepage</button></a><br/>
+    {% endblock %}
 </body>

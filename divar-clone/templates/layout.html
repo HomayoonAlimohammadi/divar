@@ -1,0 +1,44 @@
+<style>
+    .error {
+        color: red;
+    }
+    .warning {
+        color: gold;
+    }
+    .info {
+        color: cyan;
+    }
+    .success {
+        color: green;
+    }
+    .debug {
+        color: gray;
+    }
+</style>
+
+<!DOCTYPE html>
+<head>
+    {% block head %} 
+    {% endblock %} 
+</head>
+<body>
+    {% if request.user.is_authenticated %} 
+        <h3 style="color:cyan">Hello {{request.user.username}}</h3>
+    {% else %} 
+        <h3 style="color:gray">You are not signed in.</h3>
+    {% endif %}
+    <hr>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %} 
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{message}}</li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endif %}
+
+    <div style="text-align: center">
+        {% block body %} 
+        {% endblock %}
+    </div>
+</body>
