@@ -21,6 +21,14 @@ class UserCreateForm(forms.ModelForm):
             "password",
         ]
 
+    def clean(self):
+        cleaned_data = super(UserCreateForm, self).clean()
+        password = cleaned_data.get("password")  # type: ignore
+        password_conf = cleaned_data.get("password_conf")  # type: ignore
+
+        if password != password_conf:
+            raise forms.ValidationError("password and confirm_password does not match")
+
 
 class UserUpdateForm(forms.Form):
     first_name = forms.CharField(max_length=256, required=False)
@@ -36,6 +44,14 @@ class UserUpdateForm(forms.Form):
         widget=forms.PasswordInput,
         label="Password Confirmation",
     )
+
+    def clean(self):
+        cleaned_data = super(UserUpdateForm, self).clean()
+        password = cleaned_data.get("password")  # type: ignore
+        password_conf = cleaned_data.get("password_conf")  # type: ignore
+
+        if password != password_conf:
+            raise forms.ValidationError("password and confirm_password does not match")
 
 
 class UserLoginForm(forms.Form):
