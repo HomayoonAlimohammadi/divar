@@ -1,12 +1,10 @@
-from time import sleep
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
 from core.models import Item
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 import api.views as api
-from core.forms import ItemCreateForm, UserCreateUpdateForm, UserLoginForm
+from core.forms import ItemCreateForm, UserCreateForm, UserLoginForm, UserUpdateForm
 from django.contrib import messages
 
 
@@ -25,27 +23,17 @@ def index_view(request, q=None):
 
 
 def user_register_view(request):
-    form = UserCreateUpdateForm(request.POST or None)
+    form = UserCreateForm(request.POST or None)
 
     if request.method == "POST":
         if form.is_valid():
-            first_name = form.cleaned_data.get("first_name")
-            last_name = form.cleaned_data.get("last_name")
-            username = form.cleaned_data["username"]
-            email = form.cleaned_data["email"]
             password = form.cleaned_data["password"]
             password_conf = form.cleaned_data["password_conf"]
             if password != password_conf:
                 messages.add_message(request, messages.ERROR, "Passwords do not match.")
                 return redirect("core:user_register")
             try:
-                user = User.objects.create_user(  # type: ignore
-                    username=username,
-                    password=password,
-                    first_name=first_name,
-                    last_name=last_name,
-                    email=email,
-                )
+                user = form.save()
                 login(request, user)
                 messages.add_message(
                     request, messages.SUCCESS, "User was created successfully"
@@ -56,8 +44,8 @@ def user_register_view(request):
             return redirect("core:index")
     if request.user.is_authenticated:
         return redirect("core:user_details", request.user.pk)
-    context = {"form": form}
-    return render(request, "user_register.html", context=context)
+    context = {"form": form, "type": "register"}
+    return render(request, "user_create_update.html", context=context)
 
 
 def user_list_view(request):
@@ -93,7 +81,48 @@ def user_login_view(request):
 
 
 def user_update_view(request):
-    return HttpResponse("Updated! are hatman!")
+    form = UserUpdateForm(request.POST or None)
+    if not request.user.is_authenticated:
+        messages.add_message(request, messages.ERROR, "You have to log in first.")
+        return redirect("core:user_login")
+    if request.method == "POST":
+        print("request method was post!")
+        user = get_object_or_404(User, pk=request.user.pk)
+        if form.is_valid():
+            print("form is valid")
+            new_data = {
+                "first_name": form.cleaned_data.get("first_name"),
+                "last_name": form.cleaned_data.get("last_name"),
+                "username": form.cleaned_data.get("username"),
+                "email": form.cleaned_data.get("email"),
+            }
+            password = form.cleaned_data.get("password")
+            password_conf = form.cleaned_data.get("password_conf")
+            if password != password_conf:
+                messages.add_message(request, messages.ERROR, "Passwords do not match.")
+            else:
+                try:
+                    for key, val in new_data.items():
+                        print(f"this is now {key}: {val}, {type(val)}, {repr(val)}")
+                        if val:
+                            print(f"{key}: {val} was eddited")
+                            setattr(user, key, val)
+                    if password:
+                        user.set_password(password)
+                    user.save()
+                    print("user was updated")
+                    messages.add_message(
+                        request, messages.SUCCESS, "Updated user data successfully."
+                    )
+                    logout(request)
+                    login(request, user)
+                except Exception as e:
+                    messages.add_message(request, messages.ERROR, str(e))
+                return redirect("core:user_details", request.user.pk)
+        else:
+            messages.add_message(request, messages.ERROR, "Form was not valid!")
+    context = {"form": form, "type": "update"}
+    return render(request, "user_create_update.html", context=context)
 
 
 def user_logout_view(request):
@@ -108,22 +137,15 @@ def item_create_view(request):
     if not request.user.is_authenticated:
         return redirect("core:user_login")
 
-    form = ItemCreateForm(request.POST or None)
+    form = ItemCreateForm(request.POST, request.FILES or None)
     if request.method == "POST":
+        print(request.FILES)
         if form.is_valid():
-            name = form.cleaned_data["name"]
-            description = form.cleaned_data.get("description")
-            image = form.cleaned_data.get("image")
-            price = form.cleaned_data["price"]
-            user = request.user
             try:
-                item = Item.objects.create(
-                    name=name,
-                    description=description,
-                    price=price,
-                    user=user,
-                    image=image,
-                )
+                print(form.cleaned_data)
+                item = Item(**form.cleaned_data)
+                item.user = request.user
+                item.save()
                 messages.add_message(request, messages.SUCCESS, "Item was Created.")
             except Exception as e:
                 messages.add_message(request, messages.ERROR, "Something went wrong...")
@@ -145,7 +167,17 @@ def item_delete_view(request, item_id: int):
             item = get_object_or_404(Item, pk=item_id)
             if request.user == item.user:
                 item.delete()
+                messages.add_message(
+                    request, messages.SUCCESS, "Item was deleted successfully."
+                )
                 return redirect("core:index")
+            else:
+                messages.add_message(
+                    request, messages.ERROR, "You can only delete your own items!"
+                )
+        else:
+            messages.add_message(request, messages.ERROR, "You have to login first.")
+            return redirect("core:user_login")
 
     item = get_object_or_404(Item, pk=item_id)
     context = {"item": item}
@@ -158,7 +190,12 @@ def item_buy_view(request, item_id: int):
         res = api.pay_for_item(item.price)
         if res.status_code == 200:
             item.delete()
+            messages.add_message(
+                request, messages.SUCCESS, "Item was bought successfully!"
+            )
             return redirect("core:index")
+        else:
+            messages.add_message(request, messages.ERROR, "Something went wrong!")
     return render(request, "item_buy.html", {"item": item})
 
 

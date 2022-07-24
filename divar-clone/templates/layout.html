@@ -14,6 +14,13 @@
     .debug {
         color: gray;
     }
+    .heading {
+        text-decoration: none;
+    }
+    .messages {
+        background-color: rgb(44, 44, 44);
+        text-align: left;
+    }
 </style>
 
 <!DOCTYPE html>
@@ -22,23 +29,54 @@
     {% endblock %} 
 </head>
 <body>
-    {% if request.user.is_authenticated %} 
-        <h3 style="color:cyan">Hello {{request.user.username}}</h3>
-    {% else %} 
-        <h3 style="color:gray">You are not signed in.</h3>
-    {% endif %}
-    <hr>
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %} 
-                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{message}}</li>
-            {% endfor %}
-        </ul>
-        <hr>
-    {% endif %}
-
     <div style="text-align: center">
-        {% block body %} 
-        {% endblock %}
+        <a href={% url 'core:index' %}><h1 class="heading">Welcome to Divar Clone</h1></a><br/>
+
+        
+
+        {% if request.user.is_authenticated %} 
+            <h3 style="color:cyan">Hello {{request.user.username}}</h3>
+            <a href={% url 'core:user_logout' %}>
+                <button>Logout</button>
+            </a>
+            <a href={% url 'core:item_create' %}><button type="button">Create Item</button></a>
+            <a href={% url 'core:user_details' user.pk %}><button type="button">My Profile</button></a>
+
+        {% else %} 
+            <h3 style="color:gray">You are not signed in.</h3>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+        {% else %} 
+            <a href={% url 'core:user_register' %}><button type="button">Sign Up</button></a>
+            <a href={% url 'core:user_login' %}><button type="button">Sign In</button></a>
+        {% endif %} 
+        
+        <a href={% url 'core:user_list' %}><button type="button">Users</button></a>
+        <br/><br/>
+        <form action={% url 'core:index' %} method="post">
+            {% csrf_token %}
+            Search: <input name="q" type="text" />
+            <button type="submit">Search</button>
+        </form>
+        
+        <hr>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %} 
+                    <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{message}}</li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        <div>
+            {% block body %} 
+            {% endblock %}
+        </div>
+        <div style="margin-top: 50px; margin-bottom: 100px">
+            All rights reserved. Homayoon Alimohammadi 2022.
+        </div>
+
     </div>
 </body>
