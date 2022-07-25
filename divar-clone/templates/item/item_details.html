@@ -10,6 +10,9 @@
     {% block body %} 
     <div>
         <h2>Item Details</h2>
+        {% if item.image %} 
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+        {% endif %} 
         <p><b>Name:</b> {{item.name}}</p>
         {% if item.description %} 
             <p><b>Description:</b> {{item.description}}</p>
